@@ -41,7 +41,7 @@ void sign_up(int serv_clnt_sock)
 		m=strlen(first_p);
 		strcpy((insert+n+1),first_p);
 		insert[n+1+m]=',';
-		fd=open("info",O_WRONLY|O_APPEND|O_CREAT,MODE);
+		fd=open("passwd",O_WRONLY|O_APPEND|O_CREAT,MODE);
 		write(fd,insert,strlen(insert));      //write the new account and password to the file
 		printf("Sign up success!,Now,you already have an account!\n");
 		write(serv_clnt_sock,"ok",2);
@@ -105,7 +105,7 @@ void process_child(int serv_clnt_sock)
 	n=strlen(buf);
 	buf[n-1]=0;
 
-	info_fd=open("info",O_RDONLY);
+	info_fd=open("passwd",O_RDONLY);
 	zero_buf(info);
 	printf("info:%s\n",info);
 	read(info_fd,(void*)info,BUF_SIZE);                      //read from the file which save the message of username
