@@ -27,6 +27,6 @@
 void zero_buf(char ch[]);
 void sign_up(int serv_clnt_sock);
 void process_child(int serv_clnt_sock);
-void init();
+//void init();
 
 #endif
