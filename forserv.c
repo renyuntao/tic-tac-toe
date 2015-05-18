@@ -1,5 +1,7 @@
 #include"forserv.h"
 
+int count;  //record the number of account
+
 void zero_buf(char ch[])
 {
 	int i;
@@ -10,6 +12,7 @@ void zero_buf(char ch[])
 void sign_up(int serv_clnt_sock)
 {
 	int m,n;
+	char recd_count[5];
 	int fd;
 	char insert[BUF_SIZE]={0,};
 	char name[BUF_SIZE]={0,};       //store the username
@@ -42,7 +45,22 @@ void sign_up(int serv_clnt_sock)
 		strcpy((insert+n+1),first_p);
 		insert[n+1+m]=',';
 		fd=open("passwd",O_WRONLY|O_APPEND|O_CREAT,MODE);
-		write(fd,insert,strlen(insert));      //write the new account and password to the file
+		write(fd,insert,strlen(insert));      //write the new account and password to the 'passwd' file
+		close(fd);
+
+		memset((void*)insert,0,sizeof(insert));
+		n=strlen(name);
+		strcpy(insert,name);
+		insert[n]=' ';
+		count++;
+		sprintf(recd_count,"%d",count);
+		m=strlen(recd_count);
+		strcpy(insert+n+1,recd_count);
+		insert[n+1+m]=',';
+		fd=open("map",O_WRONLY|O_APPEND);
+		write(fd,insert,strlen(insert));       //write the informatino to the 'map' file
+		close(fd);
+
 		printf("Sign up success!,Now,you already have an account!\n");
 		write(serv_clnt_sock,"ok",2);
 		//exit(0);
@@ -182,6 +200,35 @@ void process_child(int serv_clnt_sock)
 		exit(1);
 	}
 
+}
+
+void init()
+{
+	int fd;
+	char *p;
+	char ch[BUF_SIZE];
+	
+	fd=open("map",O_RDONLY|O_CREAT,MODE);
+	memset((void*)ch,0,sizeof(ch));
+	read(fd,ch,BUF_SIZE);
+	close(fd);
+	printf("after read() ch:%s\n",ch);
+	if(strcmp(ch,"")==0)
+	{
+		printf("file is empty\n");
+		count=0;
+	}
+	else
+	{
+		printf("file is not empty\n");
+		count=0;
+		p=strtok(ch,",");	
+		while(p!=NULL)
+		{
+			count++;
+			p=strtok(NULL,",");
+		}
+	}
 }
 
 
