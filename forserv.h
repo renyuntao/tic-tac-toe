@@ -1,3 +1,6 @@
+#ifndef FORSERV_H
+#define FORSERV_H
+
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
@@ -25,3 +28,4 @@ void zero_buf(char ch[]);
 void sign_up(int serv_clnt_sock);
 void process_child(int serv_clnt_sock);
 
+#endif
