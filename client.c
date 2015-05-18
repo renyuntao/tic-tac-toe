@@ -1,12 +1,6 @@
 #include"game.h"
 
 
-void zero_buf(char ch[])
-{
-	int i;
-	for(i=0;i<BUF_SIZE;i++)
-		ch[i]=0;
-}
 
 int main(int argc,char **argv)
 {

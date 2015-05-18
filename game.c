@@ -220,3 +220,12 @@ void game()
 	}
 
 }
+
+
+void zero_buf(char ch[])
+{
+	int i;
+	for(i=0;i<BUF_SIZE;i++)
+		ch[i]=0;
+}
+
