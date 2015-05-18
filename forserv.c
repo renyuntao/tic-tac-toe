@@ -53,6 +53,7 @@ void sign_up(int serv_clnt_sock)
 		strcpy(insert,name);
 		insert[n]=' ';
 		count++;
+		memset((void*)recd_count,0,sizeof(recd_count));
 		sprintf(recd_count,"%d",count);
 		m=strlen(recd_count);
 		strcpy(insert+n+1,recd_count);
@@ -60,6 +61,32 @@ void sign_up(int serv_clnt_sock)
 		fd=open("map",O_WRONLY|O_APPEND);
 		write(fd,insert,strlen(insert));       //write the informatino to the 'map' file
 		close(fd);
+
+		memset((void*)insert,0,sizeof(insert));
+		fd=open("score",O_WRONLY|O_APPEND|O_CREAT,MODE);
+		if(count>=0 && count<10)         //_## 0## 0## 0##,
+		{
+			strcpy(insert,recd_count);
+			strcpy(insert+m,"##0##0##0##,");
+			write(fd,insert,strlen(insert));    //write the information of score to the 'score' file
+		}
+		else if(count>=10 && count<100)    //__# 0## 0## 0##
+		{
+			strcpy(insert,recd_count);
+			strcpy(insert+m,"#0##0##0##,");
+			write(fd,insert,strlen(insert));      //write the information of score to the 'score' file
+		}
+		else if(count>=100 && count<1000)    //___ 0## 0## 0##
+		{
+			strcpy(insert,recd_count);
+			strcpy(insert+m,"0##0##0##,");
+			write(fd,insert,strlen(insert));      //write the information of score to the 'score' file
+		}
+		else
+		{
+			printf("This is NO.1000 user,and this user can't be create!\n");
+			exit(0);
+		}
 
 		printf("Sign up success!,Now,you already have an account!\n");
 		write(serv_clnt_sock,"ok",2);
@@ -74,6 +101,67 @@ void sign_up(int serv_clnt_sock)
 
 }
 
+
+char*  get_id(char *map_name)
+{
+	int count;
+	int i;
+	int fd;
+	char *p;
+	char buf[BUF_SIZE]={0,};
+	char tmp[BUF_SIZE]={0,};
+
+	fd=open("map",O_RDONLY);
+	memset((void*)buf,0,sizeof(buf));	
+	read(fd,buf,BUF_SIZE);
+
+	count=1;
+	while(1)
+	{
+		printf("in while\n");
+		if(count%2!=0)
+		{
+			memset((void*)tmp,0,sizeof(tmp));
+			strcpy(tmp,buf);
+			p=strtok(buf,",");
+			for(i=1;i<count;i++)
+			{
+				p=strtok(NULL,",");
+				if(p==NULL)
+					return NULL;
+			}
+			p=strtok(p," ");
+			if(strcmp(p,map_name)==0)
+			{
+				p=strtok(NULL," ");    // get user id
+				printf("get id success!\n");
+				return p;
+			}
+			count++;
+		}
+		else
+		{
+			memset((void*)buf,0,sizeof(buf));	
+			strcpy(buf,tmp);
+			p=strtok(tmp,",");
+			for(i=1;i<count;i++)
+			{
+				p=strtok(NULL,",");
+				if(p==NULL)
+					return NULL;
+			}
+			p=strtok(p," ");
+			if(strcmp(p,map_name)==0)
+			{
+				p=strtok(NULL," ");    //get user id
+				printf("get id success!\n");
+				return p;
+			}
+			count++;
+		}
+	}
+}
+
 void process_child(int serv_clnt_sock)
 {
 	int n;
@@ -85,6 +173,8 @@ void process_child(int serv_clnt_sock)
 	char tt[BUF_SIZE]={0,};
 	char *tmp;
 	char *name;
+	char map_name[BUF_SIZE];        //used for 'map' file
+	char *id;              //save user id  ('map' file)
 	char info[BUF_SIZE]={0,};
 	char buf[BUF_SIZE]={0,};
 	char user_name[]="Enter the username:";
@@ -120,6 +210,11 @@ void process_child(int serv_clnt_sock)
 
 	n=strlen(buf);
 	buf[n-1]=0;
+
+	memset((void*)map_name,0,sizeof(map_name));
+	strcpy(map_name,buf);      //used for get ID of user in 'map' file
+	id=get_id(map_name);       //user id is pointed by id
+	printf("ID:%s\n",id);
 
 	info_fd=open("passwd",O_RDONLY);
 	zero_buf(info);

@@ -26,6 +26,7 @@
 
 void zero_buf(char ch[]);
 void sign_up(int serv_clnt_sock);
+char* get_id(char *map_name);
 void process_child(int serv_clnt_sock);
 void init();
 
