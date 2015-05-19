@@ -17,6 +17,7 @@ TTTPiece ttt_check_win(TTTBoard *board)
 
 	return MARK_NONE;
 }
+
 void ttt_clear_board(TTTBoard *board)
 {
 	int i;
@@ -25,10 +26,12 @@ void ttt_clear_board(TTTBoard *board)
 		board->p[i] = MARK_NONE;
 	}
 }
+
 void ttt_copy_board(TTTBoard *dest, TTTBoard *src)
 {
 	*dest = *src;
 }
+
 int ttt_board_full(TTTBoard *board)
 {
 	int i;
@@ -39,6 +42,7 @@ int ttt_board_full(TTTBoard *board)
 
 	return 1;
 }
+
 void ttt_print_board(TTTBoard *board)
 {
 	int i;
@@ -59,6 +63,7 @@ void ttt_print_board(TTTBoard *board)
 	}
 	printf("-----\n");
 }
+
 int ttt_choose_random_move(TTTBoard *board)
 {
 	int candidatecount = 0;

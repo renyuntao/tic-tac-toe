@@ -1,6 +1,8 @@
 #include"forserv.h"
 
 int count;  //record the number of account
+int score[3];
+char id[5]={0,};
 
 void zero_buf(char ch[])
 {
@@ -102,7 +104,7 @@ void sign_up(int serv_clnt_sock)
 }
 
 
-char*  get_id(char *map_name)
+/*char* */void  get_id(char *map_name)
 {
 	int count;
 	int i;
@@ -114,6 +116,7 @@ char*  get_id(char *map_name)
 	fd=open("map",O_RDONLY);
 	memset((void*)buf,0,sizeof(buf));	
 	read(fd,buf,BUF_SIZE);
+	memset((void*)id,0,sizeof(id));
 
 	count=1;
 	while(1)
@@ -128,14 +131,16 @@ char*  get_id(char *map_name)
 			{
 				p=strtok(NULL,",");
 				if(p==NULL)
-					return NULL;
+					return;
 			}
 			p=strtok(p," ");
 			if(strcmp(p,map_name)==0)
 			{
 				p=strtok(NULL," ");    // get user id
 				printf("get id success!\n");
-				return p;
+				strcpy(id,p);
+				//return p;
+				return;
 			}
 			count++;
 		}
@@ -148,19 +153,91 @@ char*  get_id(char *map_name)
 			{
 				p=strtok(NULL,",");
 				if(p==NULL)
-					return NULL;
+					return;
 			}
 			p=strtok(p," ");
 			if(strcmp(p,map_name)==0)
 			{
 				p=strtok(NULL," ");    //get user id
 				printf("get id success!\n");
-				return p;
+				strcpy(id,p);
+				//return p;
+				return;
 			}
 			count++;
 		}
 	}
 }
+
+void get_score(char* id)
+{
+	int n;
+	int fd;
+	//int score_tmp[3];
+	char *p;
+	char *w;   //win
+	char *l;   //lose
+	char *d;   //draw
+	char win[3]={0,};     // the number of win
+	char lose[3]={0,};     //the number of lose
+	char draw[3]={0,};    //the number of draw
+	char buf[14]={0,};
+
+	printf("in get_score print id:%s\n",id);
+	fd=open("score",O_RDONLY);
+	while(1)
+	{
+		printf("in get_score while\n");
+		n=lseek(fd,0,SEEK_CUR);
+		printf("seek_cur:%d\n",n);
+		memset((void*)buf,0,sizeof(buf));
+		read(fd,buf,3);
+		printf("after read buf:%s\n",buf);
+		p=strtok(buf,"#");
+		printf("after strtok p:%s\n",p);
+		printf("id:%s\n",id);
+		if(strcmp(id,p)==0)
+		{
+			printf("In if\n");
+			memset((void*)buf,0,sizeof(buf));
+			read(fd,buf,9);
+			close(fd);
+			w=strtok(buf,"#");
+			l=strtok(NULL,"#");
+			d=strtok(NULL,"#");
+			//memset((void*)win,0,sizeof(win));
+			//memset((void*)win,0,sizeof(lose));
+			//memset((void*)win,0,sizeof(draw));
+			//strcpy(win,w);
+			//strcpy(lose,l);
+			//strcpy(draw,d);
+
+			score[0]=atoi(w);
+			score[1]=atoi(l);
+			score[2]=atoi(d);
+
+			printf("score[0]:%d\n",score[0]);
+			printf("score[1]:%d\n",score[1]);
+			printf("score[2]:%d\n",score[2]);
+			
+			return;
+			//return score;
+		}
+		else if(p==NULL)
+		{
+			printf("in else if\n");
+			printf("getscore failure!\n");
+			close(fd);
+			exit(1);
+		}
+		else
+		{
+			printf("in else\n");
+			lseek(fd,10,SEEK_CUR);
+		}
+	}
+}
+
 
 void process_child(int serv_clnt_sock)
 {
@@ -174,7 +251,7 @@ void process_child(int serv_clnt_sock)
 	char *tmp;
 	char *name;
 	char map_name[BUF_SIZE];        //used for 'map' file
-	char *id;              //save user id  ('map' file)
+	//char *id;              //save user id  ('map' file)
 	char info[BUF_SIZE]={0,};
 	char buf[BUF_SIZE]={0,};
 	char user_name[]="Enter the username:";
@@ -213,8 +290,13 @@ void process_child(int serv_clnt_sock)
 
 	memset((void*)map_name,0,sizeof(map_name));
 	strcpy(map_name,buf);      //used for get ID of user in 'map' file
-	id=get_id(map_name);       //user id is pointed by id
+	//id=get_id(map_name);       //user id is pointed by id
+	get_id(map_name);
 	printf("ID:%s\n",id);
+	if(strcmp(id,""))
+	{
+		get_score(id);
+	}
 
 	info_fd=open("passwd",O_RDONLY);
 	zero_buf(info);
@@ -244,6 +326,8 @@ void process_child(int serv_clnt_sock)
 		if(strcmp(strtok(tmp," "),buf)==0)                //username is exist
 		{
 			flag[0]=1;      //stand for  username is correct
+			write(serv_clnt_sock,"ok",strlen("ok"));
+			sleep(1);
 			write(serv_clnt_sock,passwd,strlen(passwd));	 //send the message of "Enter the password:" to client
 			//for(j=0;j<BUF_SIZE;j++)
 			//	buf[j]=0;

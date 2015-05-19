@@ -88,6 +88,15 @@ int main(int argc,char **argv)
 	fgets(buf,BUF_SIZE,stdin);            //input the username
 	write(clnt_sock,buf,strlen(buf));
 
+	memset((void*)buf,0,sizeof(buf));
+	read(clnt_sock,buf,BUF_SIZE);
+	if(strcmp(buf,"ok")!=0)
+	{
+		printf("username is not exist!\n");
+		exit(1);
+	}
+
+	memset((void*)buf,0,sizeof(buf));
 	read(clnt_sock,buf,BUF_SIZE);      
 	fputs(buf,stdout);                     //show "Enter the password:"
 	fgets(buf,BUF_SIZE,stdin);             //input the password
