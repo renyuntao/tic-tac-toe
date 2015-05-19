@@ -30,5 +30,6 @@ void get_id(char *map_name);
 void process_child(int serv_clnt_sock);
 void init();
 void get_score(char *id);
+int set_score(int flag,char *curname);
 
 #endif

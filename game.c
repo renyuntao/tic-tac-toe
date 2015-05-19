@@ -163,8 +163,10 @@ int ttt_run_random_games(TTTBoard *board, TTTPiece currealplayer, int count)
 	return candidate[rand()%candidatecount];
 }
 
-void game()
+void game(int clnt_sock)
 {
+	char flag[6]={0,};    //tell server if user is win,    add by myself
+
 	char line[512];
 	int move, validmove;
 	TTTBoard cur;
@@ -216,11 +218,17 @@ void game()
 
 	if (winner == MARK_NONE) {
 		printf("Cat's game.\n");
+		strcpy(flag,"draw");
+		write(clnt_sock,flag,strlen(flag));
 	} else {
 		if (winner == MARK_X) {
 			printf("X wins!\n");
+			strcpy(flag,"win");
+			write(clnt_sock,flag,strlen(flag));
 		} else {
 			printf("O wins!\n");
+			strcpy(flag,"lose");
+			write(clnt_sock,flag,strlen(flag));
 		}
 	}
 

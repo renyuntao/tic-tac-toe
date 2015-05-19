@@ -1,8 +1,8 @@
 #include"forserv.h"
 
-int count;  //record the number of account
-int score[3];
-char id[5]={0,};
+int count=0;  //record the number of account
+char id[5]={0,};   //used in get_id(),save user id
+int score[3];   //used in get_score(),save win,lose,draw number
 
 void zero_buf(char ch[])
 {
@@ -14,7 +14,7 @@ void zero_buf(char ch[])
 void sign_up(int serv_clnt_sock)
 {
 	int m,n;
-	char recd_count[5];
+	char recd_count[5];      //used for insert 'map' file,save user id
 	int fd;
 	char insert[BUF_SIZE]={0,};
 	char name[BUF_SIZE]={0,};       //store the username
@@ -134,7 +134,7 @@ void sign_up(int serv_clnt_sock)
 					return;
 			}
 			p=strtok(p," ");
-			if(strcmp(p,map_name)==0)
+			if(strcmp(p,map_name)==0)  //找到对应项
 			{
 				p=strtok(NULL," ");    // get user id
 				printf("get id success!\n");
@@ -187,30 +187,18 @@ void get_score(char* id)
 	fd=open("score",O_RDONLY);
 	while(1)
 	{
-		printf("in get_score while\n");
 		n=lseek(fd,0,SEEK_CUR);
-		printf("seek_cur:%d\n",n);
 		memset((void*)buf,0,sizeof(buf));
 		read(fd,buf,3);
-		printf("after read buf:%s\n",buf);
 		p=strtok(buf,"#");
-		printf("after strtok p:%s\n",p);
-		printf("id:%s\n",id);
 		if(strcmp(id,p)==0)
 		{
-			printf("In if\n");
 			memset((void*)buf,0,sizeof(buf));
 			read(fd,buf,9);
 			close(fd);
 			w=strtok(buf,"#");
 			l=strtok(NULL,"#");
 			d=strtok(NULL,"#");
-			//memset((void*)win,0,sizeof(win));
-			//memset((void*)win,0,sizeof(lose));
-			//memset((void*)win,0,sizeof(draw));
-			//strcpy(win,w);
-			//strcpy(lose,l);
-			//strcpy(draw,d);
 
 			score[0]=atoi(w);
 			score[1]=atoi(l);
@@ -221,7 +209,6 @@ void get_score(char* id)
 			printf("score[2]:%d\n",score[2]);
 			
 			return;
-			//return score;
 		}
 		else if(p==NULL)
 		{
@@ -239,11 +226,106 @@ void get_score(char* id)
 }
 
 
+int set_score(int flag,char *curname)   //flag stand for win or lose or draw,0 is win,1 is lose,2 is draw
+{
+	int fd;
+	long n;
+	char ch[5]={0,};
+	int tmp;
+	char buf[14]={0,};
+	char *p;
+	
+	get_id(curname);
+	printf("in set_score() id:%s\n",id);
+	fd=open("score",O_RDWR);
+	while(1)
+	{
+		memset((void*)buf,0,sizeof(buf));
+		n=lseek(fd,0,SEEK_CUR);
+		printf("before read n:%ld\n",n);
+		read(fd,buf,3);
+		printf("after read() buf:%s\n",buf);
+		p=strtok(buf,"#");
+		printf("after strtok p:%s\n",p);
+		printf("id:%s\n",id);
+		if(strcmp(id,p)==0)    //找到对应项
+		{
+			if(flag==0)   //user is win
+			{
+				tmp=0;
+				printf("in set_score flag==0\n");
+				memset((void*)buf,0,sizeof(buf));
+				read(fd,buf,3);
+				p=strtok(buf,"#");
+				tmp=atoi(p);
+				tmp++;
+				sprintf(ch,"%d",tmp);
+				lseek(fd,-3,SEEK_CUR);
+				write(fd,ch,strlen(ch));
+				close(fd);
+				return 0;
+			}
+			else if(flag==1)  //user is lose
+			{
+				tmp=0;
+				printf("in set_score flag==1\n");
+				n=lseek(fd,0,SEEK_CUR);
+				printf("before lseek,n:%ld\n",n);
+				n=lseek(fd,3,SEEK_CUR);
+				printf("n:%ld\n",n);
+				memset((void*)buf,0,sizeof(buf));
+				read(fd,buf,3);
+				p=strtok(buf,"#");
+				tmp=atoi(p);
+				tmp++;
+				sprintf(ch,"%d",tmp);
+				lseek(fd,-3,SEEK_CUR);
+				write(fd,ch,strlen(ch));
+				close(fd);
+				return 0;
+			}
+			else if(flag==2)   //user is draw
+			{
+				tmp=0;
+				printf("in set_score flag==2\n");
+				lseek(fd,6,SEEK_CUR);
+				memset((void*)buf,0,sizeof(buf));
+				read(fd,buf,3);
+				printf("after read\n");
+				printf("buf:%s\n",buf);
+				p=strtok(buf,"#");
+				tmp=atoi(p);
+				tmp++;
+				sprintf(ch,"%d",tmp);
+				printf("ch:%s\n",ch);
+				lseek(fd,-3,SEEK_CUR);
+				write(fd,ch,strlen(ch));
+				close(fd);
+				return 0;
+			}
+			else
+			{
+				printf("parameter is error!\n");
+				exit(1);
+			}
+		}
+		else if(p==NULL)
+		{
+			printf("getscore failure!\n");
+			close(fd);
+			exit(1);
+		}
+		else
+			lseek(fd,10,SEEK_CUR);
+	}
+}
+
 void process_child(int serv_clnt_sock)
 {
 	int n;
 	int j;
-	int count;
+	char curname[12]={0,};   //save current user name
+	int count;     //used for strtok,control the number of loop
 	int info_fd;
 	char flag[2]={0,0};
 	char yorn[5]={0,};
@@ -325,6 +407,8 @@ void process_child(int serv_clnt_sock)
 		//printf("tmp:%s\n",tmp);
 		if(strcmp(strtok(tmp," "),buf)==0)                //username is exist
 		{
+			strcpy(curname,buf);
+			printf("curname:%s\n",curname);
 			flag[0]=1;      //stand for  username is correct
 			write(serv_clnt_sock,"ok",strlen("ok"));
 			sleep(1);
@@ -377,6 +461,26 @@ void process_child(int serv_clnt_sock)
 		exit(1);
 	}
 
+	
+	memset((void*)buf,0,sizeof(buf));
+	read(serv_clnt_sock,buf,BUF_SIZE);   //when client end the game,receive the message of if client win the game
+	if(strcmp(buf,"win")==0)
+	{
+		printf("we are win!\n");
+		set_score(0,curname);
+	}
+	else if(strcmp(buf,"lose")==0)
+	{
+		printf("we are lose!\n");
+		set_score(1,curname);
+	}
+	else if(strcmp(buf,"draw")==0)
+	{
+		printf("we are draw!\n");
+		set_score(2,curname);
+	}
+	else
+		printf("some error happened!\n");
 }
 
 

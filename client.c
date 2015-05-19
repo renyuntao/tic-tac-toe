@@ -110,7 +110,7 @@ int main(int argc,char **argv)
 		puts("Login success!");
 		puts("Now,let's begin the game!");     //begin game
 		printf("You use the 'X',and computer use the 'O'\n");
-		game();
+		game(clnt_sock);
 	}
 	else
 	{
