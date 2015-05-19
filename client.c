@@ -108,14 +108,16 @@ int main(int argc,char **argv)
 	if(!strcmp(buf,"2"))
 	{
 		puts("Login success!");
-		puts("Now,let's begin the game!");     //begin game
-		printf("You use the 'X',and computer use the 'O'\n");
-		game(clnt_sock);
+	//	puts("Now,let's begin the game!");     //begin game
+	//	printf("You use the 'X',and computer use the 'O'\n");
+	//	game(clnt_sock);
 	}
 	else
 	{
 		puts("password is not correct");
 	}
+
+	show_func(clnt_sock);
 	return 0;
 }
 

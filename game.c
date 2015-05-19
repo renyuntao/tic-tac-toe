@@ -242,3 +242,40 @@ void zero_buf(char ch[])
 		ch[i]=0;
 }
 
+
+void show_func(int clnt_sock)
+{
+	int i=0;
+	char ch;
+
+	printf("***********************************\n");
+	printf("What do you want to do next?\n\n");
+	printf("1.See your achievement\n");
+	printf("2.Begin the game\n");
+	printf("3.Quit\n\n");
+	printf("***********************************\n");
+
+	while(1)
+	{
+		printf("Please select your option(1-2)");
+		scanf("%d",&i);
+		scanf("%c",&ch);
+		if(i==1)
+		{
+			
+			break;
+		}
+		else if(i==2)
+		{
+			printf("You use the 'X',and computer use the 'O'\n");
+			game(clnt_sock);
+			break;
+		}
+		else if(i==3)
+		{
+			break;
+		}
+		else
+			printf("A invalid input,please input again\n");
+	}
+}

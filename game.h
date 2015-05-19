@@ -112,4 +112,7 @@ int ttt_run_random_games(TTTBoard *board, TTTPiece currealplayer, int count);
 void game(int clnt_sock);
 
 void zero_buf(char ch[]);
+
+void show_func(int clnt_sock);
+
 #endif
