@@ -467,6 +467,7 @@ void process_child(int serv_clnt_sock)
 
 	while(1)
 	{
+		printf("in server while");
 		memset((void*)flag,0,sizeof(flag));
 		read(serv_clnt_sock,flag,1);
 		if(strcmp(flag,"1")==0)
@@ -491,9 +492,8 @@ void process_child(int serv_clnt_sock)
 			//exit(0);
 		}
 		else if(strcmp(flag,"2")==0);
-		else
-			continue;
-		
+		else if(strcmp(flag,"3"))
+			exit(0);	
 
 
 		memset((void*)buf,0,sizeof(buf));

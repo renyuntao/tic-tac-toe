@@ -52,12 +52,28 @@ int main(int argc,char **argv)
 		else if(childpid==0)      //child process
 		{
 			close(serv_sock);	
-			//process child
+			//process  first child
+			if((childpid=fork())<0)
+			{
+				printf("fork() error!\n");
+				exit(1);
+			}
+			else if(childpid>0)    //first child exit
+				exit(0);
+			
+			//we are second child
+			sleep(2);
+			printf("second child,parent id=%d\n",getppid());
 			init();
 			process_child(serv_clnt_sock);
 		}
 		else       //parent process
+		{
 			close(serv_clnt_sock);
+			printf("Before wait\n");
+			wait(NULL);
+			printf("After wait\n");
+		}
 	}
 }
 
