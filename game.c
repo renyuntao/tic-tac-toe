@@ -216,16 +216,22 @@ void game(int clnt_sock)
 
 	ttt_print_board(&cur);
 
-	if (winner == MARK_NONE) {
+	if (winner == MARK_NONE) 
+	{
 		printf("Cat's game.\n");
 		strcpy(flag,"draw");
 		write(clnt_sock,flag,strlen(flag));
-	} else {
-		if (winner == MARK_X) {
+	} 
+	else 
+	{
+		if (winner == MARK_X) 
+		{
 			printf("X wins!\n");
 			strcpy(flag,"win");
 			write(clnt_sock,flag,strlen(flag));
-		} else {
+		} 
+		else 
+		{
 			printf("O wins!\n");
 			strcpy(flag,"lose");
 			write(clnt_sock,flag,strlen(flag));
@@ -246,40 +252,47 @@ void zero_buf(char ch[])
 void show_func(int clnt_sock)
 {
 	int i=0;
-	char ch;
+	char ch[3]={0,0,0};
 
-	printf("***********************************\n");
-	printf("What do you want to do next?\n\n");
-	printf("1.See your achievement\n");
-	printf("2.Begin the game\n");
-	printf("3.Quit\n\n");
-	printf("***********************************\n");
-
-	while(1)
+	//while(1)
+	for(;;)
 	{
-		printf("Please select your option(1-3)");
-		scanf("%d",&i);
-		scanf("%c",&ch);
-		if(i==1)
+		printf("***********************************\n");
+		printf("What do you want to do next?\n\n");
+		printf("1.See your achievement\n");
+		printf("2.Begin the game\n");
+		printf("3.Quit\n\n");
+		printf("***********************************\n");
+
+		while(1)
 		{
-			write(clnt_sock,"1",1);
-			show_score(clnt_sock);			
-			break;
+			printf("Please select your option(1-3)");
+			//scanf("%d",&i);
+			//scanf("%c",&ch);
+			fgets(ch,3,stdin);
+			i=atoi(ch);
+			if(i==1)
+			{
+				write(clnt_sock,"1",1);
+				show_score(clnt_sock);			
+				break;
+			}
+			else if(i==2)
+			{
+				write(clnt_sock,"2",1);
+				printf("You use the 'X',and computer use the 'O'\n");
+				game(clnt_sock);
+				printf("game over!\n");
+				break;
+			}
+			else if(i==3)
+			{
+				write(clnt_sock,"3",1);
+				return;
+			}
+			else
+				printf("A invalid input,please input again\n");
 		}
-		else if(i==2)
-		{
-			write(clnt_sock,"2",1);
-			printf("You use the 'X',and computer use the 'O'\n");
-			game(clnt_sock);
-			break;
-		}
-		else if(i==3)
-		{
-			write(clnt_sock,"3",1);
-			break;
-		}
-		else
-			printf("A invalid input,please input again\n");
 	}
 }
 

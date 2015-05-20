@@ -464,52 +464,59 @@ void process_child(int serv_clnt_sock)
 
 	
 	//***************LOGIN SUCCESS**********************
-	memset((void*)flag,0,sizeof(flag));
-	read(serv_clnt_sock,flag,1);
-	if(strcmp(flag,"1")==0)
+
+	while(1)
 	{
-		//show_score(score);	
-		memset((void*)ch_score,0,sizeof(ch_score));
-		sprintf(ch_score,"%d",score[0]);
-		write(serv_clnt_sock,ch_score,strlen(ch_score));
+		memset((void*)flag,0,sizeof(flag));
+		read(serv_clnt_sock,flag,1);
+		if(strcmp(flag,"1")==0)
+		{
+			//show_score(score);	
+			memset((void*)ch_score,0,sizeof(ch_score));
+			sprintf(ch_score,"%d",score[0]);
+			write(serv_clnt_sock,ch_score,strlen(ch_score));
 
-		read(serv_clnt_sock,ch_score,5);
-		memset((void*)ch_score,0,sizeof(ch_score));
-		sprintf(ch_score,"%d",score[1]);
-		write(serv_clnt_sock,ch_score,strlen(ch_score));
+			read(serv_clnt_sock,ch_score,5);
+			memset((void*)ch_score,0,sizeof(ch_score));
+			sprintf(ch_score,"%d",score[1]);
+			write(serv_clnt_sock,ch_score,strlen(ch_score));
 
-		read(serv_clnt_sock,ch_score,5);
-		memset((void*)ch_score,0,sizeof(ch_score));
-		sprintf(ch_score,"%d",score[2]);
-		write(serv_clnt_sock,ch_score,strlen(ch_score));
+			read(serv_clnt_sock,ch_score,5);
+			memset((void*)ch_score,0,sizeof(ch_score));
+			sprintf(ch_score,"%d",score[2]);
+			write(serv_clnt_sock,ch_score,strlen(ch_score));
 
-		exit(0);
+			continue;
+
+			//exit(0);
+		}
+		else if(strcmp(flag,"2")==0);
+		else
+			continue;
+		
+
+
+		memset((void*)buf,0,sizeof(buf));
+		read(serv_clnt_sock,buf,BUF_SIZE);   //when client end the game,receive the message of if client win the game
+		if(strcmp(buf,"win")==0)
+		{
+			printf("we are win!\n");
+			set_score(0,curname,id);
+		}
+		else if(strcmp(buf,"lose")==0)
+		{
+			printf("we are lose!\n");
+			set_score(1,curname,id);
+		}
+		else if(strcmp(buf,"draw")==0)
+		{
+			printf("we are draw!\n");
+			set_score(2,curname,id);
+			printf("after set_score\n");
+		}
+		else
+			printf("some error happened!\n");
 	}
-	else if(strcmp(flag,"2")==0);
-	else
-		exit(0);
-
-
-
-	memset((void*)buf,0,sizeof(buf));
-	read(serv_clnt_sock,buf,BUF_SIZE);   //when client end the game,receive the message of if client win the game
-	if(strcmp(buf,"win")==0)
-	{
-		printf("we are win!\n");
-		set_score(0,curname,id);
-	}
-	else if(strcmp(buf,"lose")==0)
-	{
-		printf("we are lose!\n");
-		set_score(1,curname,id);
-	}
-	else if(strcmp(buf,"draw")==0)
-	{
-		printf("we are draw!\n");
-		set_score(2,curname,id);
-	}
-	else
-		printf("some error happened!\n");
 }
 
 
