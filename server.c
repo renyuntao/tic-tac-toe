@@ -54,7 +54,6 @@ int main(int argc,char **argv)
 			close(serv_sock);	
 			//process child
 			init();
-			//printf("Before process_child(),count:%d\n",count);
 			process_child(serv_clnt_sock);
 		}
 		else       //parent process

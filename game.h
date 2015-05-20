@@ -115,4 +115,6 @@ void zero_buf(char ch[]);
 
 void show_func(int clnt_sock);
 
+void show_score(int clnt_sock);
+
 #endif

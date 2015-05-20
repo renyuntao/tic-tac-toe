@@ -26,10 +26,11 @@
 
 void zero_buf(char ch[]);
 void sign_up(int serv_clnt_sock);
-void get_id(char *map_name);
+void get_id(char *map_name,char *id);
 void process_child(int serv_clnt_sock);
 void init();
-void get_score(char *id);
-int set_score(int flag,char *curname);
+void get_score(char *id,int *score);
+int set_score(int flag,char *curname,char *id);
+//void show_score();
 
 #endif

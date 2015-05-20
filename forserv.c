@@ -1,8 +1,6 @@
 #include"forserv.h"
 
 int count=0;  //record the number of account
-char id[5]={0,};   //used in get_id(),save user id
-int score[3];   //used in get_score(),save win,lose,draw number
 
 void zero_buf(char ch[])
 {
@@ -104,7 +102,7 @@ void sign_up(int serv_clnt_sock)
 }
 
 
-/*char* */void  get_id(char *map_name)
+/*char* */void  get_id(char *map_name,char *id)
 {
 	int count;
 	int i;
@@ -169,7 +167,7 @@ void sign_up(int serv_clnt_sock)
 	}
 }
 
-void get_score(char* id)
+void get_score(char* id,int *score)
 {
 	int n;
 	int fd;
@@ -226,7 +224,7 @@ void get_score(char* id)
 }
 
 
-int set_score(int flag,char *curname)   //flag stand for win or lose or draw,0 is win,1 is lose,2 is draw
+int set_score(int flag,char *curname,char *id)   //flag stand for win or lose or draw,0 is win,1 is lose,2 is draw
 {
 	int fd;
 	long n;
@@ -235,7 +233,7 @@ int set_score(int flag,char *curname)   //flag stand for win or lose or draw,0 i
 	char buf[14]={0,};
 	char *p;
 	
-	get_id(curname);
+	get_id(curname,id);
 	printf("in set_score() id:%s\n",id);
 	fd=open("score",O_RDWR);
 	while(1)
@@ -325,6 +323,9 @@ void process_child(int serv_clnt_sock)
 	int n;
 	int j;
 	char curname[12]={0,};   //save current user name
+	char id[5]={0,};   //used in get_id(),save user id
+	int score[3];   //used in get_score(),save win,lose,draw number
+	char ch_score[5]={0,};  //used for send score to client 
 	int count;     //used for strtok,control the number of loop
 	int info_fd;
 	char flag[2]={0,0};
@@ -373,11 +374,11 @@ void process_child(int serv_clnt_sock)
 	memset((void*)map_name,0,sizeof(map_name));
 	strcpy(map_name,buf);      //used for get ID of user in 'map' file
 	//id=get_id(map_name);       //user id is pointed by id
-	get_id(map_name);
+	get_id(map_name,id);
 	printf("ID:%s\n",id);
 	if(strcmp(id,""))
 	{
-		get_score(id);
+		get_score(id,score);
 	}
 
 	info_fd=open("passwd",O_RDONLY);
@@ -462,22 +463,50 @@ void process_child(int serv_clnt_sock)
 	}
 
 	
+	//***************LOGIN SUCCESS**********************
+	memset((void*)flag,0,sizeof(flag));
+	read(serv_clnt_sock,flag,1);
+	if(strcmp(flag,"1")==0)
+	{
+		//show_score(score);	
+		memset((void*)ch_score,0,sizeof(ch_score));
+		sprintf(ch_score,"%d",score[0]);
+		write(serv_clnt_sock,ch_score,strlen(ch_score));
+
+		read(serv_clnt_sock,ch_score,5);
+		memset((void*)ch_score,0,sizeof(ch_score));
+		sprintf(ch_score,"%d",score[1]);
+		write(serv_clnt_sock,ch_score,strlen(ch_score));
+
+		read(serv_clnt_sock,ch_score,5);
+		memset((void*)ch_score,0,sizeof(ch_score));
+		sprintf(ch_score,"%d",score[2]);
+		write(serv_clnt_sock,ch_score,strlen(ch_score));
+
+		exit(0);
+	}
+	else if(strcmp(flag,"2")==0);
+	else
+		exit(0);
+
+
+
 	memset((void*)buf,0,sizeof(buf));
 	read(serv_clnt_sock,buf,BUF_SIZE);   //when client end the game,receive the message of if client win the game
 	if(strcmp(buf,"win")==0)
 	{
 		printf("we are win!\n");
-		set_score(0,curname);
+		set_score(0,curname,id);
 	}
 	else if(strcmp(buf,"lose")==0)
 	{
 		printf("we are lose!\n");
-		set_score(1,curname);
+		set_score(1,curname,id);
 	}
 	else if(strcmp(buf,"draw")==0)
 	{
 		printf("we are draw!\n");
-		set_score(2,curname);
+		set_score(2,curname,id);
 	}
 	else
 		printf("some error happened!\n");
@@ -511,6 +540,15 @@ void init()
 			p=strtok(NULL,",");
 		}
 	}
+}
+
+
+void show_score(int *score)
+{
+	printf("Your achievement are as follows:\n");	
+	printf("win:%d\n",score[0]);
+	printf("lose:%d\n",score[1]);
+	printf("draw:%d\n",score[2]);
 }
 
 

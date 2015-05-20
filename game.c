@@ -257,25 +257,57 @@ void show_func(int clnt_sock)
 
 	while(1)
 	{
-		printf("Please select your option(1-2)");
+		printf("Please select your option(1-3)");
 		scanf("%d",&i);
 		scanf("%c",&ch);
 		if(i==1)
 		{
-			
+			write(clnt_sock,"1",1);
+			show_score(clnt_sock);			
 			break;
 		}
 		else if(i==2)
 		{
+			write(clnt_sock,"2",1);
 			printf("You use the 'X',and computer use the 'O'\n");
 			game(clnt_sock);
 			break;
 		}
 		else if(i==3)
 		{
+			write(clnt_sock,"3",1);
 			break;
 		}
 		else
 			printf("A invalid input,please input again\n");
 	}
+}
+
+void show_score(int clnt_sock)
+{
+	char ch_score[5]={0,};	
+	char win[5]={0,};
+	char lose[5]={0,};
+	char draw[5]={0,};
+
+	memset((void*)ch_score,0,sizeof(ch_score));
+	read(clnt_sock,ch_score,5);
+	strcpy(win,ch_score);
+	write(clnt_sock,"ok",strlen("ok"));
+
+	memset((void*)ch_score,0,sizeof(ch_score));
+	read(clnt_sock,ch_score,5);
+	strcpy(lose,ch_score);
+	write(clnt_sock,"ok",strlen("ok"));
+
+	memset((void*)ch_score,0,sizeof(ch_score));
+	read(clnt_sock,ch_score,5);
+	strcpy(draw,ch_score);
+
+	printf("\n*******************************************\n");
+	printf("Your achievement are as follows:\n\n");
+	printf("Win:%s\n",win);
+	printf("Lose:%s\n",lose);
+	printf("Draw:%s\n\n",draw);
+	printf("********************************************\n");
 }
