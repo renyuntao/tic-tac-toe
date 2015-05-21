@@ -4,6 +4,8 @@
 
 int main(int argc,char **argv)
 {
+	char curname[12]={0,};
+	int n;
 	char flag[2]={0,0};
 	int clnt_sock;
 	char buf[BUF_SIZE]={0,};
@@ -87,6 +89,11 @@ int main(int argc,char **argv)
 	fputs(buf,stdout);                    //show  "Enter the username:"
 	fgets(buf,BUF_SIZE,stdin);            //input the username
 	write(clnt_sock,buf,strlen(buf));
+	
+	memset((void*)curname,0,sizeof(curname));     //get current username
+	strcpy(curname,buf);
+	n=strlen(curname);
+	curname[n-1]=0;
 
 	memset((void*)buf,0,sizeof(buf));
 	read(clnt_sock,buf,BUF_SIZE);
@@ -117,7 +124,7 @@ int main(int argc,char **argv)
 		puts("password is not correct");
 	}
 
-	show_func(clnt_sock);
+	show_func(clnt_sock,curname);
 	return 0;
 }
 

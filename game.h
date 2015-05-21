@@ -113,7 +113,7 @@ void game(int clnt_sock);
 
 void zero_buf(char ch[]);
 
-void show_func(int clnt_sock);
+void show_func(int clnt_sock,char *curname);
 
 void show_score(int clnt_sock);
 

@@ -249,7 +249,7 @@ void zero_buf(char ch[])
 }
 
 
-void show_func(int clnt_sock)
+void show_func(int clnt_sock,char *curname)     //curname is used for 'else if(i==3)'
 {
 	int i=0;
 	char ch[3]={0,0,0};
@@ -291,7 +291,7 @@ void show_func(int clnt_sock)
 			{
 				write(clnt_sock,"3",1);
 				sleep(2);
-				if(execl("./chat_clnt","chat_clnt","127.0.0.1","6767","ryt",(char*)0)<0)
+				if(execl("./chat_clnt","chat_clnt","127.0.0.1","6767",curname,(char*)0)<0)
 				{
 					fprintf(stderr,"execl() error!\n");
 					exit(1);

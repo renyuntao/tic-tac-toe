@@ -10,5 +10,9 @@ client:
 	gcc -c client.c
 	gcc -c game.c
 	gcc client.o game.o -o $@
+clean_serv:
+	rm server forserv.o server.o  chat_serv  chat_serv.o
+clean_clnt:
+	rm chat_clnt.o chat_clnt client.o game.o client
 clean:
-	rm server client game.o client.o forserv.o server.o chat_clnt chat_serv chat_clnt.o chat_serv.o
+	rm chat_clnt.o chat_clnt client.o game.o client server forserv.o server.o  chat_serv  chat_serv.o
