@@ -253,20 +253,22 @@ void show_func(int clnt_sock)
 {
 	int i=0;
 	char ch[3]={0,0,0};
+	pid_t pid;
 
 	//while(1)
 	for(;;)
 	{
-		printf("***********************************\n");
+		printf("*****************************************************************************\n");
 		printf("What do you want to do next?\n\n");
 		printf("1.See your achievement\n");
 		printf("2.Begin the game\n");
-		printf("3.Quit\n\n");
-		printf("***********************************\n");
+		printf("3.Enter the chat room and chat with others who are also in the chat room\n");
+		printf("4.Quit\n\n");
+		printf("*****************************************************************************\n");
 
 		while(1)
 		{
-			printf("Please select your option(1-3)");
+			printf("Please select your option(1-4)");
 			//scanf("%d",&i);
 			//scanf("%c",&ch);
 			fgets(ch,3,stdin);
@@ -288,6 +290,17 @@ void show_func(int clnt_sock)
 			else if(i==3)
 			{
 				write(clnt_sock,"3",1);
+				sleep(2);
+				if(execl("./chat_clnt","chat_clnt","127.0.0.1","6767","ryt",(char*)0)<0)
+				{
+					fprintf(stderr,"execl() error!\n");
+					exit(1);
+				}
+				break;
+			}
+			else if(i==4)
+			{
+				write(clnt_sock,"4",1);
 				return;
 			}
 			else

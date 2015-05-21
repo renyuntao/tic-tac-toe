@@ -492,7 +492,16 @@ void process_child(int serv_clnt_sock)
 			//exit(0);
 		}
 		else if(strcmp(flag,"2")==0);
-		else if(strcmp(flag,"3"))
+		else if(strcmp(flag,"3")==0)
+		{
+			if(execl("./chat_serv","chat_serv","6767",(char*)0)<0)
+			{
+				fprintf(stderr,"execl() error!\n");
+				perror("server exec()");
+				exit(1);
+			}
+		}
+		else if(strcmp(flag,"4"))
 			exit(0);	
 
 
