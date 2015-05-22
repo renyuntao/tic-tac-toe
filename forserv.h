@@ -25,10 +25,15 @@
 #define BUF_SIZE 500
 #define MY_PORT "8989"
 #define MY_CHAT_PORT "6767"
+#define WIN_SCORE 10
+#define LOSE_SCORE -1
+#define DRAW_SCORE 3
 
 void zero_buf(char ch[]);
 void sign_up(int serv_clnt_sock);
 void get_id(char *map_name,char *id);
+void get_total(char *id,int *total);
+int set_total(int flag,char *id);
 void process_child(int serv_clnt_sock);
 void init();
 void get_score(char *id,int *score);

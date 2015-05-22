@@ -62,6 +62,32 @@ void sign_up(int serv_clnt_sock)
 		write(fd,insert,strlen(insert));       //write the informatino to the 'map' file
 		close(fd);
 
+		//************************* create 'total' file ***************************	
+		memset((void*)insert,0,sizeof(insert));
+		fd=open("total",O_WRONLY|O_APPEND|O_CREAT,MODE);
+		if(count>=0 && count<10)
+		{
+			strcpy(insert,recd_count);             //-## 0##,
+			strcpy(insert+m,"##0##,");
+			write(fd,insert,strlen(insert));       //write to 'total' file
+			close(fd);
+		}
+		else if(count>=10 && count<100)
+		{
+			strcpy(insert,recd_count);
+			strcpy(insert+m,"#0##,");
+			write(fd,insert,strlen(insert));
+			close(fd);
+		}
+		else
+		{
+			printf("This NO.100 user,and this user can't be create!\n");
+			close(fd);
+			exit(0);
+		}
+		//*************************************************************************
+
+
 		memset((void*)insert,0,sizeof(insert));
 		fd=open("score",O_WRONLY|O_APPEND|O_CREAT,MODE);
 		if(count>=0 && count<10)         //_## 0## 0## 0##,
@@ -69,22 +95,26 @@ void sign_up(int serv_clnt_sock)
 			strcpy(insert,recd_count);
 			strcpy(insert+m,"##0##0##0##,");
 			write(fd,insert,strlen(insert));    //write the information of score to the 'score' file
+			close(fd);
 		}
 		else if(count>=10 && count<100)    //__# 0## 0## 0##
 		{
 			strcpy(insert,recd_count);
 			strcpy(insert+m,"#0##0##0##,");
 			write(fd,insert,strlen(insert));      //write the information of score to the 'score' file
+			close(fd);
 		}
 		else if(count>=100 && count<1000)    //___ 0## 0## 0##
 		{
 			strcpy(insert,recd_count);
 			strcpy(insert+m,"0##0##0##,");
 			write(fd,insert,strlen(insert));      //write the information of score to the 'score' file
+			close(fd);
 		}
 		else
 		{
 			printf("This is NO.1000 user,and this user can't be create!\n");
+			close(fd);
 			exit(0);
 		}
 
@@ -102,7 +132,7 @@ void sign_up(int serv_clnt_sock)
 }
 
 
-/*char* */void  get_id(char *map_name,char *id)
+void  get_id(char *map_name,char *id)    //the id will be save in 'id' variable
 {
 	int count;
 	int i;
@@ -318,6 +348,117 @@ int set_score(int flag,char *curname,char *id)   //flag stand for win or lose or
 	}
 }
 
+void get_total(char *id,int *total)    //the total score will be saved in variable of total
+{
+	char ch[8]={0,};
+	int fd;
+	char *p;
+
+	fd=open("total",O_RDONLY);
+	while(1)
+	{
+		printf("in while\n");
+		memset((void*)ch,0,sizeof(ch));
+		read(fd,ch,3);
+		p=strtok(ch,"#");
+		if(strcmp(id,p)==0)  //find successlly
+		{
+			memset((void*)ch,0,sizeof(ch));
+			read(fd,ch,3);
+			p=strtok(p,"#");
+			*total=atoi(p);
+			return;
+		}
+		else if(p=="")
+		{
+			fprintf(stderr,"get_total error!\n");
+			close(fd);
+			exit(1);
+		}
+		else                  
+		{
+			lseek(fd,4,SEEK_CUR);
+		}
+	}
+}
+
+int set_total(int flag,char *id)       //'flag' stand for win,lose or draw,0 is win,1 is lose,2 is draw
+{
+	int fd;
+	char ch[8]={0,};
+	char *p;
+	int tmp;
+
+	tmp=0;
+	fd=open("total",O_RDWR);
+	while(1)
+	{
+		memset((void*)ch,0,sizeof(ch));
+		read(fd,ch,3);
+		p=strtok(ch,"#");
+		if(strcmp(p,id)==0)        //find successlly
+		{
+			if(flag==0)           //the user is win
+			{
+				memset((void*)ch,0,sizeof(ch));
+				read(fd,ch,3);
+				p=strtok(ch,"#");
+				tmp=atoi(p);
+				tmp+=WIN_SCORE;
+				memset((void*)ch,0,sizeof(ch));
+				sprintf(ch,"%d",tmp);
+				lseek(fd,-3,SEEK_CUR);
+				write(fd,ch,strlen(ch));
+				close(fd);
+				return 0;
+			}
+			else if(flag==1)     //the user is lose
+			{
+				memset((void*)ch,0,sizeof(ch));
+				read(fd,ch,3);
+				p=strtok(ch,"#");
+				tmp=atoi(p);
+				tmp+=LOSE_SCORE;
+				memset((void*)ch,0,sizeof(ch));
+				sprintf(ch,"%d",tmp);
+				lseek(fd,-3,SEEK_CUR);
+				write(fd,ch,strlen(ch));
+				close(fd);
+				return 0;
+			}
+			else if(flag==2)     //the user is draw
+			{
+				memset((void*)ch,0,sizeof(ch));
+				read(fd,ch,3);
+				p=strtok(ch,"#");
+				tmp=atoi(p);
+				tmp+=DRAW_SCORE;
+				memset((void*)ch,0,sizeof(ch));
+				sprintf(ch,"%d",tmp);
+				lseek(fd,-3,SEEK_CUR);
+				write(fd,ch,strlen(ch));
+				close(fd);
+				return 0;
+			}
+			else
+			{
+				fprintf(stderr,"set_total() error!\n");
+				exit(1);
+			}
+		}
+		else if(p==NULL)
+		{
+			printf("set_total error!\n");
+			close(fd);
+			exit(1);
+		}
+		else
+			lseek(fd,4,SEEK_CUR);
+	}
+}
+
+
+
 void process_child(int serv_clnt_sock)
 {
 	int n;
@@ -326,6 +467,7 @@ void process_child(int serv_clnt_sock)
 	char curname[12]={0,};   //save current user name
 	char id[5]={0,};   //used in get_id(),save user id
 	int score[3];   //used in get_score(),save win,lose,draw number
+	int total=0;    //used for get or set 'total' file
 	char ch_score[5]={0,};  //used for send score to client 
 	int count;     //used for strtok,control the number of loop
 	int info_fd;
@@ -372,6 +514,8 @@ void process_child(int serv_clnt_sock)
 	n=strlen(buf);
 	buf[n-1]=0;
 
+	//***************************** Get user id and score *******************************
+	
 	memset((void*)map_name,0,sizeof(map_name));
 	strcpy(map_name,buf);      //used for get ID of user in 'map' file
 	//id=get_id(map_name);       //user id is pointed by id
@@ -381,6 +525,15 @@ void process_child(int serv_clnt_sock)
 	{
 		get_score(id,score);
 	}
+
+	//***********************************************************************************
+
+	//**************************** Get user total score *********************************
+
+	get_total(id,&total);
+	printf("Total:%d\n",total);
+
+	//***********************************************************************************
 
 	info_fd=open("passwd",O_RDONLY);
 	zero_buf(info);
@@ -405,8 +558,6 @@ void process_child(int serv_clnt_sock)
 		if(buf[n-1]=='\n')
 			buf[n-1]=0;
 		tmp=name;
-		//printf("buf:%s\n",buf);
-		//printf("tmp:%s\n",tmp);
 		if(strcmp(strtok(tmp," "),buf)==0)                //username is exist
 		{
 			strcpy(curname,buf);
@@ -415,8 +566,6 @@ void process_child(int serv_clnt_sock)
 			write(serv_clnt_sock,"ok",strlen("ok"));
 			sleep(1);
 			write(serv_clnt_sock,passwd,strlen(passwd));	 //send the message of "Enter the password:" to client
-			//for(j=0;j<BUF_SIZE;j++)
-			//	buf[j]=0;
 			zero_buf(buf);
 			read(serv_clnt_sock,buf,BUF_SIZE);               //receive the message of password from client
 			
@@ -501,7 +650,7 @@ void process_child(int serv_clnt_sock)
 		read(serv_clnt_sock,flag,1);
 		if(strcmp(flag,"1")==0)
 		{
-			//show_score(score);	
+			
 			memset((void*)ch_score,0,sizeof(ch_score));
 			sprintf(ch_score,"%d",score[0]);
 			write(serv_clnt_sock,ch_score,strlen(ch_score));
@@ -516,6 +665,11 @@ void process_child(int serv_clnt_sock)
 			sprintf(ch_score,"%d",score[2]);
 			write(serv_clnt_sock,ch_score,strlen(ch_score));
 
+			read(serv_clnt_sock,ch_score,5);
+			memset((void*)ch_score,0,sizeof(ch_score));
+			sprintf(ch_score,"%d",total);
+			write(serv_clnt_sock,ch_score,strlen(ch_score));
+			
 			continue;
 
 			//exit(0);
@@ -536,26 +690,34 @@ void process_child(int serv_clnt_sock)
 			exit(0);	
 
 
+  		//*********************** Begin the Tic-Tac-Toe **************************
+
 		memset((void*)buf,0,sizeof(buf));
 		read(serv_clnt_sock,buf,BUF_SIZE);   //when client end the game,receive the message of if client win the game
 		if(strcmp(buf,"win")==0)
 		{
 			printf("we are win!\n");
 			set_score(0,curname,id);
+			set_total(0,id);
 		}
 		else if(strcmp(buf,"lose")==0)
 		{
 			printf("we are lose!\n");
 			set_score(1,curname,id);
+			set_total(1,id);
 		}
 		else if(strcmp(buf,"draw")==0)
 		{
 			printf("we are draw!\n");
 			set_score(2,curname,id);
+			set_total(2,id);
 			printf("after set_score\n");
+			printf("after set_total\n");
 		}
 		else
 			printf("some error happened!\n");
+
+		//************************************************************************
 	}
 }
 

@@ -320,6 +320,7 @@ void show_score(int clnt_sock)
 	char win[5]={0,};
 	char lose[5]={0,};
 	char draw[5]={0,};
+	char total[5]={0,};
 
 	memset((void*)ch_score,0,sizeof(ch_score));
 	read(clnt_sock,ch_score,5);
@@ -334,11 +335,17 @@ void show_score(int clnt_sock)
 	memset((void*)ch_score,0,sizeof(ch_score));
 	read(clnt_sock,ch_score,5);
 	strcpy(draw,ch_score);
+	write(clnt_sock,"ok",strlen("ok"));
+
+	memset((void*)ch_score,0,sizeof(ch_score));
+	read(clnt_sock,ch_score,5);
+	strcpy(total,ch_score);
 
 	printf("\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
 	printf("Your achievement are as follows:\n\n");
-	printf("Win:%s\n",win);
-	printf("Lose:%s\n",lose);
-	printf("Draw:%s\n\n",draw);
+	printf("Win:%s     x 10\n",win);
+	printf("Lose:%s    x -1\n",lose);
+	printf("Draw:%s    x 3\n",draw);
+	printf("Total score:%s\n\n",total);
 	printf("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n\n");
 }
