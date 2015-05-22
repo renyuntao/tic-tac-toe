@@ -322,6 +322,7 @@ void process_child(int serv_clnt_sock)
 {
 	int n;
 	int j;
+	pid_t pid;
 	char curname[12]={0,};   //save current user name
 	char id[5]={0,};   //used in get_id(),save user id
 	int score[3];   //used in get_score(),save win,lose,draw number
@@ -464,6 +465,34 @@ void process_child(int serv_clnt_sock)
 
 	
 	//***************LOGIN SUCCESS**********************
+	
+	if((pid=fork())<0)
+	{
+		printf("fork() error\n");
+		perror("server fork()");
+		exit(1);
+	}
+	else if(pid==0)    //child process 
+	{
+		if((pid=fork())<0)
+		{
+			printf("second fork() error\n");
+			perror("second server fork()");
+			exit(1);
+		}
+		else if(pid==0)    //second child process
+		{
+			if(execl("./chat_serv","chat_serv","6767",(char*)0)<0)
+			{
+				fprintf(stderr,"execl() error!\n");
+				perror("server execl()");
+				exit(1);
+			}
+		}
+		else      //first child process,i.e. second child process's parent process
+			exit(0);
+	}
+	wait(NULL);     //parent process,wait first child process
 
 	while(1)
 	{
@@ -492,15 +521,17 @@ void process_child(int serv_clnt_sock)
 			//exit(0);
 		}
 		else if(strcmp(flag,"2")==0);
-		else if(strcmp(flag,"3")==0)
-		{
-			if(execl("./chat_serv","chat_serv","6767",(char*)0)<0)
-			{
-				fprintf(stderr,"execl() error!\n");
-				perror("server exec()");
-				exit(1);
-			}
-		}
+		//else if(strcmp(flag,"3")==0)
+		//{
+		//	if(execl("./chat_serv","chat_serv","6767",(char*)0)<0)
+		//	{
+		//		fprintf(stderr,"execl() error!\n");
+		//		perror("server exec()");
+		//		exit(1);
+		//	}
+		//	printf("server after exec!\n");
+		//	continue;
+		//}
 		else if(strcmp(flag,"4"))
 			exit(0);	
 

@@ -289,13 +289,20 @@ void show_func(int clnt_sock,char *curname)     //curname is used for 'else if(i
 			}
 			else if(i==3)
 			{
-				write(clnt_sock,"3",1);
+				//write(clnt_sock,"3",1);
 				sleep(2);
-				if(execl("./chat_clnt","chat_clnt","127.0.0.1","6767",curname,(char*)0)<0)
+				if((pid=fork())<0)
+					perror("fork()");
+				else if(pid==0)
 				{
-					fprintf(stderr,"execl() error!\n");
-					exit(1);
+					if(execl("./chat_clnt","chat_clnt","127.0.0.1","6767",curname,(char*)0)<0)
+					{
+						fprintf(stderr,"execl() error!\n");
+						exit(1);
+					}
 				}
+				wait(NULL);
+				printf("\n#################### You have already exit the chat room ######################\n\n");
 				break;
 			}
 			else if(i==4)
@@ -330,10 +337,10 @@ void show_score(int clnt_sock)
 	read(clnt_sock,ch_score,5);
 	strcpy(draw,ch_score);
 
-	printf("\n*******************************************\n");
+	printf("\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
 	printf("Your achievement are as follows:\n\n");
 	printf("Win:%s\n",win);
 	printf("Lose:%s\n",lose);
 	printf("Draw:%s\n\n",draw);
-	printf("********************************************\n");
+	printf("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n\n");
 }

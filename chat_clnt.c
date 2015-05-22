@@ -50,7 +50,7 @@ void * send_msg(void * arg)   // send thread main
 {
 	int sock=*((int*)arg);
 	char name_msg[NAME_SIZE+BUF_SIZE];
-	printf("\n**********************************CHAT ROOM********************************\n");
+	printf("\n##################################CHAT ROOM##################################\n");
 	printf("Now you are in the chat room,if you want to quit,please input 'q' or 'Q'\n");
 	while(1) 
 	{
@@ -59,6 +59,7 @@ void * send_msg(void * arg)   // send thread main
 		{
 			close(sock);
 			exit(0);
+			//return;
 		}
 		sprintf(name_msg,"%s %s", name, msg);
 		write(sock, name_msg, strlen(name_msg));
