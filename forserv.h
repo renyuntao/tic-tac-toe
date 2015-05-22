@@ -23,6 +23,8 @@
 #define MODE S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH
 #define LISTEN_NUM 8
 #define BUF_SIZE 500
+#define MY_PORT "8989"
+#define MY_CHAT_PORT "6767"
 
 void zero_buf(char ch[]);
 void sign_up(int serv_clnt_sock);

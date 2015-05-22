@@ -42,6 +42,9 @@
 #include<assert.h>
 #include<limits.h>
 #define BUF_SIZE 5000
+#define SERV_IP "157.7.53.149"
+#define SERV_PORT "8989"
+#define SERV_CHAT_PORT "6767"
 
 
 // the following are used to reward a win and penalize a loss:

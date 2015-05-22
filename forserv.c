@@ -482,7 +482,7 @@ void process_child(int serv_clnt_sock)
 		}
 		else if(pid==0)    //second child process
 		{
-			if(execl("./chat_serv","chat_serv","6767",(char*)0)<0)
+			if(execl("./chat_serv","chat_serv",MY_CHAT_PORT,(char*)0)<0)
 			{
 				fprintf(stderr,"execl() error!\n");
 				perror("server execl()");

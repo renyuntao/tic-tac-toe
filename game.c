@@ -269,8 +269,6 @@ void show_func(int clnt_sock,char *curname)     //curname is used for 'else if(i
 		while(1)
 		{
 			printf("Please select your option(1-4)");
-			//scanf("%d",&i);
-			//scanf("%c",&ch);
 			fgets(ch,3,stdin);
 			i=atoi(ch);
 			if(i==1)
@@ -295,7 +293,7 @@ void show_func(int clnt_sock,char *curname)     //curname is used for 'else if(i
 					perror("fork()");
 				else if(pid==0)
 				{
-					if(execl("./chat_clnt","chat_clnt","127.0.0.1","6767",curname,(char*)0)<0)
+					if(execl("./chat_clnt","chat_clnt",SERV_IP,SERV_CHAT_PORT,curname,(char*)0)<0)
 					{
 						fprintf(stderr,"execl() error!\n");
 						exit(1);

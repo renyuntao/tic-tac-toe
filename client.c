@@ -11,19 +11,21 @@ int main(int argc,char **argv)
 	char buf[BUF_SIZE]={0,};
 	struct sockaddr_in serv_addr;
 
-	if(argc!=3)
-	{
-		printf("Usage:%s <IP> <Port>\n",argv[0]);
-		exit(1);
-	}
+	//if(argc!=3)
+	//{
+	//	printf("Usage:%s <IP> <Port>\n",argv[0]);
+	//	exit(1);
+	//}
 
 	flag[0]=0;
 	clnt_sock=socket(PF_INET,SOCK_STREAM,0);
 
 	memset(&serv_addr,0,sizeof(serv_addr));
 	serv_addr.sin_family=AF_INET;
-	serv_addr.sin_addr.s_addr=inet_addr(argv[1]);
-	serv_addr.sin_port=htons(atoi(argv[2]));
+	//serv_addr.sin_addr.s_addr=inet_addr(argv[1]);
+	serv_addr.sin_addr.s_addr=inet_addr(SERV_IP);
+	//serv_addr.sin_port=htons(atoi(argv[2]));
+	serv_addr.sin_port=htons(atoi(SERV_PORT));
 
 	if(connect(clnt_sock,(struct sockaddr*)&serv_addr,sizeof(serv_addr))==-1)
 	{
