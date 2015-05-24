@@ -254,6 +254,11 @@ void show_func(int clnt_sock,char *curname)     //curname is used for 'else if(i
 	int i=0;
 	char ch[3]={0,0,0};
 	pid_t pid;
+	char buf[100]={0,};
+	char *p;
+	int rank;
+	char ch_score[5]={0,};
+	//int score[30];
 
 	//while(1)
 	for(;;)
@@ -262,13 +267,14 @@ void show_func(int clnt_sock,char *curname)     //curname is used for 'else if(i
 		printf("What do you want to do next?\n\n");
 		printf("1.See your achievement\n");
 		printf("2.Begin the game\n");
-		printf("3.Enter the chat room and chat with others who are also in the chat room\n");
-		printf("4.Quit\n\n");
+		printf("3.Enter the chat room\n");
+		printf("4.See the ranking\n");
+		printf("5.Quit\n\n");
 		printf("*****************************************************************************\n");
 
 		while(1)
 		{
-			printf("Please select your option(1-4)");
+			printf("Please select your option(1-5)");
 			fgets(ch,3,stdin);
 			i=atoi(ch);
 			if(i==1)
@@ -305,7 +311,37 @@ void show_func(int clnt_sock,char *curname)     //curname is used for 'else if(i
 			}
 			else if(i==4)
 			{
+				rank=0;
 				write(clnt_sock,"4",1);
+				memset((void*)buf,0,sizeof(buf));
+				read(clnt_sock,buf,100);
+
+				//write(clnt_sock,"ok",strlen("ok"));
+				printf("after read,buf:%s\n",buf);
+				printf("\n&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& Ranking &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n");
+				printf("Rank           Name           Score\n");
+				p=strtok(buf,",");
+				while(p!=NULL)
+				{
+					printf("%2d",rank+1);
+					printf("%17s",p);
+					p=strtok(NULL,",");
+
+					write(clnt_sock,"ok",strlen("ok"));
+					memset((void*)ch_score,0,sizeof(ch_score));
+					read(clnt_sock,ch_score,5);
+
+					printf("%15s\n",ch_score);
+
+					//printf("%d\n",total_array[rank]);
+					rank++;
+				}
+				printf("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n\n");
+				break;
+			}
+			else if(i==5)
+			{
+				write(clnt_sock,"5",1);
 				return;
 			}
 			else

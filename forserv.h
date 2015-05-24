@@ -25,9 +25,14 @@
 #define BUF_SIZE 500
 #define MY_PORT "8989"
 #define MY_CHAT_PORT "6767"
+//************About total score****************
 #define WIN_SCORE 10
 #define LOSE_SCORE -1
 #define DRAW_SCORE 3
+//*********************************************
+#define TOTAL_ARRAY_LEN 25
+
+
 
 void zero_buf(char ch[]);
 void sign_up(int serv_clnt_sock);
@@ -38,6 +43,9 @@ void process_child(int serv_clnt_sock);
 void init();
 void get_score(char *id,int *score);
 int set_score(int flag,char *curname,char *id);
-//void show_score();
+void get_every_total();
+void get_name(char *id,char *name);    
+void InsertSort();
+void sort_name();
 
 #endif

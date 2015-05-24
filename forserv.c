@@ -1,6 +1,8 @@
 #include"forserv.h"
 
 int count=0;  //record the number of account
+int total_array[TOTAL_ARRAY_LEN];     //save the total score of every user
+char rank_name[BUF_SIZE];
 
 void zero_buf(char ch[])
 {
@@ -457,7 +459,158 @@ int set_total(int flag,char *id)       //'flag' stand for win,lose or draw,0 is 
 	}
 }
 
+void get_every_total()
+{
+	int fd;
+	int i;
+	int j;
+	int n;
+	int tmp;
+	char *p;
+	char buf[5]={0,};
 
+	j=3;
+	fd=open("total",O_RDONLY);
+	for(i=0;i<count;i++)
+	{
+		memset((void*)buf,0,sizeof(buf));
+		n=lseek(fd,j,SEEK_CUR);
+		printf("lseek n:%d\n",n);
+		read(fd,buf,3);
+		p=strtok(buf,"#");
+		tmp=atoi(p);
+		printf("int get_every_total,tmp:%d\n",tmp);
+		total_array[i]=tmp;
+		printf("int get_every_total,total_array[%d]:%d\n",i,total_array[0]);
+		j=(j==3)?4:3;
+	}
+
+}
+
+void get_name(char *id,char *name)    //get username by id in 'map' file,and name will be saved in the variable of 'name'
+{
+	int fd;
+	int n;
+	int i;
+	char buf[BUF_SIZE]={0,};
+	char *p;
+
+	fd=open("map",O_RDONLY);
+	memset((void*)buf,0,sizeof(buf));
+	n=atoi(id);
+	while(read(fd,buf,500)!=0)
+	{
+		p=strtok(buf,",");
+		for(i=1;i<n;i++)
+		{
+			p=strtok(NULL,",");
+		}
+		p=strtok(p," ");
+		strcpy(name,p);
+		if(strlen(name)>0)
+			break;
+	}
+}
+
+void InsertSort()
+{
+	int i,j;
+	int tmp;
+
+	for(i=0;i<count-1;i++)
+	{
+		tmp=total_array[i+1];
+		j=i;
+		while(j>-1 && tmp>total_array[j])
+		{
+			total_array[j+1]=total_array[j];
+			j--;
+		}
+		total_array[j+1]=tmp;
+	}
+}
+
+void sort_name()
+{
+	int i,tmp;
+	int j;
+	int n;
+	int m;
+	int fd;
+	char buf[5]={0,};
+	char *p;
+	char name[12]={0,};
+	char rank_name_tmp[BUF_SIZE]={0,};
+
+	j=3;
+	memset((void*)rank_name,0,sizeof(rank_name));
+	printf("in sort_name,before for,count:%d\n",count);
+	for(i=0;i<count;i++)
+	{
+		memset((void*)rank_name_tmp,0,sizeof(rank_name_tmp));
+		strcpy(rank_name_tmp,rank_name);
+		printf("in sort_name for\n");
+		fd=open("total",O_RDONLY);
+		tmp=total_array[i];
+		printf("in sort_name,total_array[%d]:%d\n",i,total_array[i]);
+		while(1)
+		{
+			printf("int sort_name while\n");
+			lseek(fd,j,SEEK_CUR);
+			memset((void*)buf,0,sizeof(buf));
+			read(fd,buf,3);
+			printf("in while,after read,buf:%s\n",buf);
+			p=strtok(buf,"#");
+			printf("in while,after strtok,p:%s\n",p);
+			if(p==NULL)
+			{
+				fprintf(stderr,"sort_name error!\n");
+				exit(1);
+			}
+			n=atoi(p);
+			if(n==tmp)      
+			{
+				lseek(fd,-6,SEEK_CUR);
+				memset((void*)buf,0,sizeof(buf));
+				read(fd,buf,3);
+				printf("after read,buf:%s\n",buf);
+				p=strtok(buf,"#");     //get user id
+				printf("p:%s\n",p);
+				get_name(p,name);    //get username ************
+				printf("name:%s\n",name);
+				p=strtok(rank_name_tmp,",");
+				while(p!=NULL)
+				{
+					if(strcmp(p,name)==0)    //rank_name already have 'name'
+					{
+						lseek(fd,4,SEEK_CUR);
+						break;
+					}
+					p=strtok(NULL,",");
+				}
+				if(p==NULL)                  //rank_name don't have 'name'      
+				{
+					strcat(rank_name,name);
+					strcat(rank_name,",");
+					//m=strlen(name);
+					//name[m]=',';
+					//strcat(rank_name,name);
+					printf("after strcat,rank_name:%s\n",rank_name);
+					close(fd);
+					break;
+				}
+				else if(p!=NULL)
+				{
+					lseek(fd,4,SEEK_CUR);
+					continue;
+				}
+			}
+			else
+				lseek(fd,1,SEEK_CUR);
+		}
+	}
+	
+}
 
 void process_child(int serv_clnt_sock)
 {
@@ -469,7 +622,7 @@ void process_child(int serv_clnt_sock)
 	int score[3];   //used in get_score(),save win,lose,draw number
 	int total=0;    //used for get or set 'total' file
 	char ch_score[5]={0,};  //used for send score to client 
-	int count;     //used for strtok,control the number of loop
+	int tmp_count;     //used for strtok,control the number of loop
 	int info_fd;
 	char flag[2]={0,0};
 	char yorn[5]={0,};
@@ -482,6 +635,7 @@ void process_child(int serv_clnt_sock)
 	char buf[BUF_SIZE]={0,};
 	char user_name[]="Enter the username:";
 	char passwd[]="Enter the password:";
+	char *p;
 
 	while(1)
 	{
@@ -535,6 +689,47 @@ void process_child(int serv_clnt_sock)
 
 	//***********************************************************************************
 
+	//************************** Get every user's total score *******************************
+
+	printf("Before get_every_total,count:%d\n",count);
+	get_every_total();
+	for(j=0;j<count;j++)
+		printf("total_array[%d]:%d\n",j,total_array[j]);
+ 	//***************************************************************************************
+	
+	//************************** Sort the array of total_array ******************************
+	InsertSort();
+	for(j=0;j<count;j++)
+		printf("total_array[%d]:%d\n",j,total_array[j]);
+	//***************************************************************************************
+
+	//******************************** Sort the user name ***********************************
+	printf("Before sort_name()\n");
+	sort_name();
+	printf("After sort_name\n");
+	//for(j=0;j<count;j++)
+	//{
+	//	p=strtok(rank_name,",");
+	//	printf("user%d:%s\n",j+1,p);
+	//	p=strtok(NULL,",");
+	//}
+	printf("******************rank_name:%s\n",rank_name);
+	p=strtok(rank_name,",");
+	j=0;
+	while(p!=NULL)
+	{
+		printf("user%d:%s\n",j+1,p);
+		p=strtok(NULL,",");
+		j++;
+	}
+	//***************************************************************************************
+
+	//*********************test get_name**********************
+	//memset((void*)curname,0,sizeof(curname));
+	//get_name("2",curname);
+	//printf("after get_name:%s\n",curname);
+	//********************************************************
+
 	info_fd=open("passwd",O_RDONLY);
 	zero_buf(info);
 	printf("info:%s\n",info);
@@ -551,7 +746,7 @@ void process_child(int serv_clnt_sock)
 	name=strtok(info,",");
 
 	flag[0]=0;
-	count=0;
+	tmp_count=0;
 	while(name!=NULL)
 	{
 		n=strlen(buf);
@@ -591,8 +786,8 @@ void process_child(int serv_clnt_sock)
 				exit(1);
 			}
 		}
-		count++;
-		if(count%2==0)
+		tmp_count++;
+		if(tmp_count%2==0)
 		{
 			strcpy(tt,info);
 			name=strtok(info,",");
@@ -602,7 +797,7 @@ void process_child(int serv_clnt_sock)
 			strcpy(info,tt);
 			name=strtok(tt,",");
 		}
-		for(j=0;j<count;j++)
+		for(j=0;j<tmp_count;j++)
 			name=strtok(NULL,",");
 	}
 	if(flag[0]==0)
@@ -686,7 +881,22 @@ void process_child(int serv_clnt_sock)
 		//	printf("server after exec!\n");
 		//	continue;
 		//}
-		else if(strcmp(flag,"4"))
+		else if(strcmp(flag,"4")==0)
+		{
+			sort_name();
+			printf("in server,before write to client,rank_name:%s\n",rank_name);
+			write(serv_clnt_sock,rank_name,strlen(rank_name));
+
+			for(j=0;j<count;j++)
+			{
+				read(serv_clnt_sock,ch_score,5);
+				memset((void*)ch_score,0,sizeof(ch_score));
+				sprintf(ch_score,"%d",total_array[j]);
+				write(serv_clnt_sock,ch_score,strlen(ch_score));
+			}
+			continue;
+		}
+		else if(strcmp(flag,"5")==0)
 			exit(0);	
 
 

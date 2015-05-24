@@ -50,8 +50,8 @@ void * send_msg(void * arg)   // send thread main
 {
 	int sock=*((int*)arg);
 	char name_msg[NAME_SIZE+BUF_SIZE];
-	printf("\n##################################CHAT ROOM##################################\n");
-	printf("Now you are in the chat room,if you want to quit,please input 'q' or 'Q'\n");
+	printf("\n################################## CHAT ROOM ##################################\n");
+	printf("Now you are in the chat room,and you can chat with others who are also in the\nchat room;if you want to quit,please input 'q' or 'Q'\n");
 	while(1) 
 	{
 		fgets(msg, BUF_SIZE, stdin);
