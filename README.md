@@ -1,5 +1,5 @@
 1.Synopsis:
-This is a little game based on Tic-Tac-Toe,and it is disigned for Linuxer.
+	This is a little game based on Tic-Tac-Toe,and it is disigned for Linuxer.
 2.How to use this program?
 If you just want to play the game ,what you need to do is compile it with
 $ make client
