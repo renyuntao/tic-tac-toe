@@ -24,7 +24,7 @@ $ ./server
 
 To play the game better,you computer should connect to the Internet.
 
-
+*********************************** Chinese ************************************
 
 1、简介
 
