@@ -24,6 +24,8 @@ $ ./server
 
 To play the game better,you computer should connect to the Internet.
 
+
+
 1、简介
 
 这是一个基于井字棋的游戏，它为Linux用户而设计。
