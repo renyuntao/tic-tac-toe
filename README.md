@@ -20,7 +20,13 @@ and run as
 
 $ ./server
 
-then modify the ’#define SERV_IP "157。7。53。149"‘ to '#define SERV_IP "127.0.0.1"'
+then modify the ’#define SERV_IP "157.7.53.149"‘  to  '#define SERV_IP "127.0.0.1"'  in 'game.h' file,and compile it with
+
+$ make client
+
+then run as
+
+$ ./client
 
 3.Note
 
@@ -51,6 +57,17 @@ $ make server
 然后运行它:
 
 $ ./server
+
+接下来你需要在'game.h'文件中将'#define SERV_IP "157.7.53.149"' 修改为'#define SERV_IP "127.0.0.1"',
+
+然后编译:
+
+$ make client
+
+运行:
+
+$ ./client
+
 
 3、注意
 
