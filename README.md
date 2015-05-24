@@ -12,13 +12,15 @@ and run as
 
 $ ./client
 
-If you want to know how the program is running,you'd better to run the server and client at one computer,so you should also compile server with
+If you want to know how the program is running,you'd better to run the server and client at one computer,so you should first compile server with
 
 $ make server
 
 and run as
 
 $ ./server
+
+then modify the ’#define SERV_IP "157。7。53。149"‘ to '#define SERV_IP "127.0.0.1"'
 
 3.Note
 
