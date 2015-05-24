@@ -12,6 +12,8 @@ and run as
 
 $ ./client
 
+I have already run the server as daemon in the remote host.
+
 If you want to know how the program is running,you'd better to run the server and client at one computer,so you should first compile server with
 
 $ make server
@@ -30,7 +32,7 @@ $ ./client
 
 3.Note
 
-To play the game better,you computer should connect to the Internet.
+To play the game better,your computer should connect to the Internet.
 
 *********************************** Chinese ************************************
 
@@ -49,6 +51,8 @@ $ make client
 运行：
 
 $ ./client
+
+我已经在远程主机上将server程序作为守护进程运行了。
 
 如果你想了解程序是如何运行的，你最好将服务器程序和客户端程序运行在同一台电脑上，因此你需要编译服务器程序:
 
