@@ -1,8 +1,8 @@
-1.Synopsis:
+#Synopsis
 
 This is a little game based on Tic-Tac-Toe,and it is disigned for Linuxer.
 
-2.How to use this program?
+#How to use this program?
 
 If you just want to play the game ,what you need to do is compile it with
 
@@ -30,17 +30,17 @@ then run as
 
 $ ./client
 
-3.Note
+#Note
 
 To play the game better,your computer should connect to the Internet.
 
 *********************************** Chinese ************************************
 
-1、简介
+#简介
 
 这是一个基于井字棋的游戏，它为Linux用户而设计。
 
-2、如何使用这个程序？
+#如何使用这个程序？
 
 如果你只是想玩游戏，你只要按如下步骤做就可以了：
 
@@ -73,6 +73,6 @@ $ make client
 $ ./client
 
 
-3、注意
+#注意
 
 为了能够更好的玩游戏，你的电脑需要连接到因特网。
