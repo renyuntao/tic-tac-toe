@@ -31,18 +31,6 @@ To play the game better,your computer should connect to the Internet.
 
 #如何使用这个程序？
 
-如果你只是想玩游戏，你只要按如下步骤做就可以了：
-
-编译：
-
-$ make client
-
-运行：
-
-$ ./client
-
-我已经在远程主机上将server程序作为守护进程运行了。
-
 如果你想了解程序是如何运行的，你最好将服务器程序和客户端程序运行在同一台电脑上，因此你需要编译服务器程序:
 
 $ make server
@@ -50,8 +38,6 @@ $ make server
 然后运行它:
 
 $ ./server
-
-接下来你需要在'game.h'文件中将'#define SERV_IP "157.7.53.149"' 修改为'#define SERV_IP "127.0.0.1"',
 
 然后编译:
 
