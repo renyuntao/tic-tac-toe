@@ -19,10 +19,6 @@ then run as
 
 $ ./client
 
-#Note
-
-To play the game better,your computer should connect to the Internet.
-
 *********************************** Chinese ************************************
 
 #简介
@@ -47,7 +43,3 @@ $ make client
 
 $ ./client
 
-
-#注意
-
-为了能够更好的玩游戏，你的电脑需要连接到因特网。
