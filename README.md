@@ -3,17 +3,6 @@
 This is a little game based on Tic-Tac-Toe,and it is disigned for Linuxer.
 
 #How to use this program?
-
-If you just want to play the game ,what you need to do is compile it with
-
-$ make client
-
-and run as
-
-$ ./client
-
-I have already run the server as daemon in the remote host.
-
 If you want to know how the program is running,you'd better to run the server and client at one computer,so you should first compile server with
 
 $ make server
