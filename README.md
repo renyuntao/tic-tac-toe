@@ -17,7 +17,10 @@ $ make client
 
 then run as
 
-$ ./client
+$ ./client  
+#Hints  
+You can play with others if you run the server side program on a computer that others can connect to it.
+
 
 *********************************** Chinese ************************************
 
@@ -41,5 +44,8 @@ $ make client
 
 运行:
 
-$ ./client
+$ ./client  
+#提示
+如果你将服务器程序运行在一台别人可以连接到的电脑上，那么你就可以和别人一起完这个游戏。
+
 
